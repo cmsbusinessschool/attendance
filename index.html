@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f4f8;
+            text-align: center;
+        }
+
+        .box {
+            width: 650px;
+            margin: 60px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Bigger Logo */
+        img {
+            width: 320px;   /* increased size */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 25px;
+            background: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0055aa;
+        }
+
+        .row {
+            text-align: left;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #555;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <!-- Bigger Logo -->
+    <img src="logo.png" alt="Institution Logo">
+
+    <h2>Student Attendance</h2>
+
+    <input type="text" id="usnInput" placeholder="Enter USN">
+    <br>
+    <button onclick="searchAttendance()">Search</button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwS4jjUe6NfFgfRtnXP5CjFgXkHqZXEtDnViTzb9YyFhUnHGC-7E7aJBjqzAMXBeEkNPw/exec";
+
+async function searchAttendance() {
+
+    const usn = document.getElementById("usnInput").value.trim().toUpperCase();
+    const resultDiv = document.getElementById("result");
+
+    if (!usn) {
+        resultDiv.innerHTML = "<p class='error'>Please enter USN</p>";
+        return;
+    }
+
+    resultDiv.innerHTML = "Loading...";
+
+    try {
+
+        const response = await fetch(`${WEB_APP_URL}?usn=${usn}`);
+        const data = await response.json();
+
+        if (data.error) {
+            resultDiv.innerHTML = `<p class='error'>${data.error}</p>`;
+            return;
+        }
+
+        let output = "<div class='success'>";
+
+        for (let key in data) {
+
+            let value = data[key];
+
+            // Round percentage columns
+            if (key.includes("%") && !isNaN(value)) {
+                value = parseFloat(value).toFixed(2);
+            }
+
+            output += `
+                <div class="row">
+                    <strong>${key}:</strong> ${value}
+                </div>
+            `;
+        }
+
+        output += "</div>";
+
+        // Add Disclaimer
+        output += `
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> 
+               The attendance published here is for immediate information to the students and cannot be
+considered as final. For any further clarification contact MBA Office.
+            </div>
+        `;
+
+        resultDiv.innerHTML = output;
+
+    } catch (error) {
+        resultDiv.innerHTML = "<p class='error'>Error fetching attendance</p>";
+    }
+}
+
+</script>
+
+</body>
+</html>
