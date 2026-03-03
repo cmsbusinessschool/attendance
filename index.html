@@ -125,12 +125,17 @@ async function searchAttendance() {
 
             let value = data[key];
 
-            // Convert numeric strings to number
-            let numericValue = parseFloat(value);
+            // Convert header to lowercase for safe comparison
+            let header = key.toLowerCase();
 
-            // If it is a valid number AND between 0 and 100, treat as percentage
-            if (!isNaN(numericValue) && numericValue >= 0 && numericValue <= 100) {
-                value = numericValue.toFixed(2) + " %";
+            // Only apply percentage formatting to attendance columns
+            if (
+                (header.includes("attendance") || 
+                 header.includes("overall") || 
+                 header.includes("%")) 
+                 && !isNaN(parseFloat(value))
+            ) {
+                value = parseFloat(value).toFixed(2) + " %";
             }
 
             output += `
@@ -158,6 +163,6 @@ async function searchAttendance() {
 }
 
 </script>
-
 </body>
 </html>
+
