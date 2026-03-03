@@ -18,9 +18,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* Bigger Logo */
         img {
-            width: 350px;   /* increased size */
+            width: 350px;
             margin-bottom: 30px;
         }
 
@@ -82,7 +81,6 @@
 
 <div class="box">
 
-    <!-- Bigger Logo -->
     <img src="logo.png" alt="Institution Logo">
 
     <h2>Student Attendance</h2>
@@ -127,9 +125,12 @@ async function searchAttendance() {
 
             let value = data[key];
 
-            // Round percentage columns
-            if (key.includes("attendance") && !isNaN(value)) {
-                value = parseFloat(value).toFixed(2)+ " % ";
+            // Convert numeric strings to number
+            let numericValue = parseFloat(value);
+
+            // If it is a valid number AND between 0 and 100, treat as percentage
+            if (!isNaN(numericValue) && numericValue >= 0 && numericValue <= 100) {
+                value = numericValue.toFixed(2) + " %";
             }
 
             output += `
@@ -141,12 +142,11 @@ async function searchAttendance() {
 
         output += "</div>";
 
-        // Add Disclaimer
         output += `
             <div class="disclaimer">
                 <strong>Disclaimer:</strong> 
-               The attendance published here is for immediate information to the students and cannot be
-considered as final. For any further clarification contact MBA Office.
+                The attendance published here is for immediate information to the students and cannot be
+                considered as final. For any further clarification, contact the MBA Office.
             </div>
         `;
 
@@ -161,5 +161,3 @@ considered as final. For any further clarification contact MBA Office.
 
 </body>
 </html>
-
-
